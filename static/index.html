@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Fetch Timing Comparison</title>
+</head>
+<body>
+  <h1>Data Fetch Timing Comparison</h1>
+
+  <button onclick="fetchUsers()">Fetch Users</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function fetchUsers() {
+      const startTimeMongoDB = performance.now();
+
+      try {
+        const responseMongoDB = await fetch("/users");
+        const usersMongoDB = await responseMongoDB.json();
+
+        const endTimeMongoDB = performance.now();
+        const elapsedTimeMongoDB = endTimeMongoDB - startTimeMongoDB;
+
+        displayResult(`Fetched users from MongoDB in ${elapsedTimeMongoDB.toFixed(2)} milliseconds`);
+
+        const startTimeRedis = performance.now();
+
+        const responseRedis = await fetch("/users-cach");
+        const usersRedis = await responseRedis.json();
+
+        const endTimeRedis = performance.now();
+        const elapsedTimeRedis = endTimeRedis - startTimeRedis;
+
+        displayResult(`Fetched users from Redis in ${elapsedTimeRedis.toFixed(2)} milliseconds`);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        displayResult("Error fetching users");
+      }
+    }
+
+    function displayResult(message) {
+      const resultElement = document.getElementById("result");
+      resultElement.innerHTML += `<p>${message}</p>`;
+    }
+  </script>
+</body>
+</html>
